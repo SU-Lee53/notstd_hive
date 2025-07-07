@@ -191,11 +191,11 @@ It will ease communication across fields, as opposed to the current scenario whe
 
 >> The three core aspects of a hive from an abstract perspective are:
 >> 
->> 1. A collection of element blocks + metadata, to prevent reallocation during insertion (as opposed to a single element block).
->> 
->> 2. A method of skipping erased elements in O(1) time during iteration (as opposed to reallocating subsequent elements during erasure).
->> 
->> 3. An erased-element location recording mechanism, to enable the re-use of memory from erased elements in subsequent insertions, 
+>>> 1. A collection of element blocks + metadata, to prevent reallocation during insertion (as opposed to a single element block).
+>>> 
+>>> 2. A method of skipping erased elements in O(1) time during iteration (as opposed to reallocating subsequent elements during erasure).
+>>> 
+>>> 3. An erased-element location recording mechanism, to enable the re-use of memory from erased elements in subsequent insertions, 
 which in turn increases cache locality and reduces the number of block allocations/deallocations.
 >>
 >>Each element block houses multiple elements. The metadata about each block may or may not be allocated with the blocks themselves and could be contained in a separate structure. 

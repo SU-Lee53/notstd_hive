@@ -126,10 +126,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="hive.cpp" />
+    <ClCompile Include="int_hive.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hive.h" />
+    <ClInclude Include="int_hive.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\hive.md" />

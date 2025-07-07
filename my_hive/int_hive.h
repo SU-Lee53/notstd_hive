@@ -1,10 +1,12 @@
 #pragma once
 
 // ================================
-// My notstd::hive
+// My notstd::int_hive
+// for implement testing
 // 
 //               Created 2025.06.27
 // ================================
+
 
 #include <initializer_list>
 #include <compare>
@@ -31,15 +33,15 @@ struct hive_limits {
 	size_t min;
 	size_t max;
 	constexpr hive_limits(size_t minimum, size_t maximum) noexcept
-		: min{ minimum }, max{ maximum } { }
+		: min{ minimum }, max{ maximum } {
+	}
 };
 
 
-template<class T>
-class hive {
+class int_hive {
 public:
-	using value_type = T;
-	using allocator_type = std::allocator<T>;
+	using value_type = int;
+	using allocator_type = std::allocator<int>;
 	using pointer = typename std::allocator_traits<allocator_type>::pointer;
 	using const_pointer = typename std::allocator_traits<allocator_type>::const_pointer;
 	using reference = value_type&;
@@ -53,7 +55,7 @@ public:
 
 private:
 	using skipfield_type = typename std::conditional_t<(sizeof(value_type) > 10), unsigned short, unsigned char>;
-	
+
 	struct _hive_memory_block;
 
 	class _hive_block_iterator {
@@ -66,7 +68,7 @@ private:
 
 	public:
 		_hive_block_iterator() = default;			// 2025. 5. 20
-		_hive_block_iterator(T* p) : p{ p } {}	// special X
+		_hive_block_iterator(int* p) : p{ p } {}	// special X
 
 		// iterator essentials
 		_hive_block_iterator& operator++() {
@@ -74,7 +76,7 @@ private:
 			return *this;
 		};
 
-		T& operator*() const {
+		int& operator*() const {
 			return *p;
 		}
 
@@ -88,7 +90,7 @@ private:
 			tmp.p++;
 			return tmp;
 		}
-		
+
 		// bidirectional iterator essentials
 		_hive_block_iterator& operator--() {
 			--p;
@@ -100,11 +102,11 @@ private:
 			tmp.p--;
 			return tmp;
 		}
-		
+
 		// random access iterator essentials
 		_hive_block_iterator& operator+=(difference_type n) {
 			p += n;
-			return *p;
+			return *this;
 		}
 
 		_hive_block_iterator operator+(difference_type n) {
@@ -113,7 +115,7 @@ private:
 
 		_hive_block_iterator& operator-=(difference_type n) {
 			p -= n;
-			return *p;
+			return *this;
 		}
 
 		_hive_block_iterator operator-(difference_type n) {
@@ -130,12 +132,12 @@ private:
 
 
 	private:
-		T* p{};
+		int* p{};
 
 	};
 
 	struct _hive_memory_block {
-		T* pBlock;
+		int* pBlock;
 		skipfield_type* pSkipfields;
 
 
@@ -145,26 +147,12 @@ private:
 		// functions
 		_hive_memory_block(size_t bytes) : capacity{ bytes } {
 			size = 0;
-
-			pData= std::make_unique<char[]>( (bytes * sizeof(T)) + (bytes * sizeof(skipfield_type) );
-			char* pBase = pData.get();
-
-			pBlock = reinterpret_cast<T*>(pBase);
-			pSkipfields = reinterpret_cast<skipfield_type*>(pBase + bytes * sizeof(T));
-			::memset((void*)pSkipfields, 0, bytes * sizeof(skipfield_type));
 		}
 
 		~_hive_memory_block() {
-			for (auto& p : *this) {
-				p.~T();
-			}
 		}
 
-		T& operator[](size_t idx) const {
-#ifdef _DEBUG
-			assert(idx <= nBlockSize);
-#endif
-			return *pBlock[idx];
+		int& operator[](size_t idx) const {
 		}
 
 		_hive_block_iterator begin() const {
@@ -190,27 +178,27 @@ public:
 	hive() = default;
 
 	hive(size_type n, hive_limits block_limits);
-	hive(size_type n, const T& value);
-	hive(size_type n, const T& vlaue, hive_limits block_limits);
+	hive(size_type n, const int& value);
+	hive(size_type n, const int& vlaue, hive_limits block_limits);
 	template <class InputIt>
 	hive(InputIt first, InputIt last);
 	template <class InputIt>
 	hive(InputIt first, InputIt last, hive_limits block_limits);
 	hive(const hive& x);
 	hive(hive&& x);
-	hive(std::initializer_list<T> il);
-	hive(std::initializer_list<T> il, hive_limits block_limits);
+	hive(std::initializer_list<int> il);
+	hive(std::initializer_list<int> il, hive_limits block_limits);
 
 	~hive();
 	hive& operator=(const hive& x);
 	hive& operator=(hive&& x);
-	hive& operator=(std::initializer_list<T>);
+	hive& operator=(std::initializer_list<int>);
 	template<class InputIterator>
 	void assign(InputIterator first, InputIterator last);
-	template<std::_Container_compatible_range<T> R>
+	template<std::_Container_compatible_range<int> R>
 	void assign_range(R&& rg);
-	void assign(size_type n, const T& t);
-	void assign(std::initializer_list<T>);
+	void assign(size_type n, const int& t);
+	void assign(std::initializer_list<int>);
 	allocator_type get_allocator() const noexcept;
 
 	// iterators
@@ -222,7 +210,7 @@ public:
 	const_reverse_iterator	rbegin() const noexcept;
 	reverse_iterator		rend() noexcept;
 	const_reverse_iterator	rend() const noexcept;
-	
+
 	const_iterator			cbegin() const noexcept;
 	const_iterator			cend() const noexcept;
 	const_reverse_iterator	crbegin() const noexcept;
@@ -245,23 +233,23 @@ public:
 
 	// modifiers
 	// based on [hive.modifiers]
-	template<class... Args> 
+	template<class... Args>
 	iterator emplace(Args&&... args);
-	template<class... Args> 
+	template<class... Args>
 	iterator emplace_hint(const_iterator hint, Args&&... args);
 	iterator insert(const T& x);
 	iterator insert(T&& x);
-	iterator insert(const_iterator hint, const T& x);
-	iterator insert(const_iterator hint, T&& x);
-	void insert(std::initializer_list<T> il);
-	template<std::_Container_compatible_range<T> R>
+	iterator insert(const_iterator hint, const int& x);
+	iterator insert(const_iterator hint, int&& x);
+	void insert(std::initializer_list<int> il);
+	template<std::_Container_compatible_range<int> R>
 	void insert_range(R&& rg);
 	template<class InputIt>
 	void insert(InputIt first, InputIt last);
-	void insert(size_type n, const T& x);
+	void insert(size_type n, const int& x);
 	iterator erase(const_iterator position);
 	iterator erase(const_iterator first, const_iterator last);
-	void swap(hive&) noexcept(see below);
+	void swap(hive&) noexcept;
 	void clear() noexcept;
 
 
@@ -269,16 +257,16 @@ public:
 	// based on [hive.operations]
 	void splice(hive& x);
 	void splice(hive&& x);
-	template<class BinaryPredicate = equal_to<T>>
+	template<class BinaryPredicate = std::equal_to<int>>
 	size_type unique(BinaryPredicate binary_pred = BinaryPredicate());
 
-	template<class Compare = less<T>>
+	template<class Compare = std::less<int>>
 	void sort(Compare comp = Compare());
 
 	iterator get_iterator(const_pointer p) noexcept;
 	const_iterator get_iterator(const_pointer p) const noexcept;
 
 private:
-	hive_limits current_limits = {};
+	hive_limits current_limits = {10, 100};
 
 };

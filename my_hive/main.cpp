@@ -1,12 +1,13 @@
 #include <iostream>
 #include <vector>
 #include "hive.h"
-
-std::conditional_t < sizeof(int) > 10, int, double > ;
+#include "int_hive.h"
 
 int main()
 {
-	hive<int> h;
+	//hive<int> h;
+	
+	int_hive h;
 	std::vector<int> v;
 
 }
